@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ztree</title>
+</head>
+<script src="js/jquery-1.4.4.min.js"></script>
+<script src="js/jquery.ztree.all.min.js"></script>
+<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" />
+
+<body>
+  <div class="content_wrap">
+    <div class="zTreeDemoBackground left">
+      <ul class="list">
+        <li class="title">&nbsp;&nbsp;城市：<input id="key" type="text" value="" style="width: 120px;" />
+          <a href="javascript:;" id="btn">查询</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id="menuContent" class="menuContent" style="display: block; position: absolute;">
+    <ul id="treeDemo" class="ztree" style="margin-top: 0; width: 110px;">
+    </ul>
+  </div>
+
+  <script>
+    var setting = {
+      view: {
+        selectedMulti: false //是否允许多选
+      },
+      data: {
+        simpleData: {
+          enable: true
+        }
+      },
+      callback: {
+        onClick: onClick
+      }
+    };
+
+    var zNodes = [
+      { id: 1, pId: 0, name: "北京" },
+      { id: 2, pId: 0, name: "天津" },
+      { id: 3, pId: 0, name: "上海" },
+      { id: 6, pId: 0, name: "重庆" },
+      { id: 4, pId: 0, name: "河北省" },
+      { id: 41, pId: 4, name: "石家庄" },
+      { id: 42, pId: 4, name: "保定" },
+      { id: 43, pId: 4, name: "邯郸" },
+      { id: 44, pId: 4, name: "承德" },
+      { id: 5, pId: 0, name: "广东省" },
+      { id: 51, pId: 5, name: "广州" },
+      { id: 52, pId: 5, name: "深圳" },
+      { id: 53, pId: 5, name: "东莞" },
+      { id: 54, pId: 5, name: "佛山" },
+      { id: 70, pId: 7, name: "福州2" },
+      { id: 7, pId: 0, name: "福建省" },
+      { id: 71, pId: 7, name: "福州" },
+      { id: 72, pId: 7, name: "厦门" },
+      { id: 73, pId: 7, name: "泉州" },
+      { id: 74, pId: 7, name: "三明" }
+    ];
+
+    //zTree初始化数据
+    function initialZtree() {
+      $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    }
+
+    function onClick(e, treeId, node) {
+      console.log(e, treeId, node)
+      // var treeObj = $.fn.zTree.getZTreeObj("treeDemo")
+      // treeObj.expandNode(node) //展开所有
+    }
+
+    var $key = $("#key")
+    var $btn = $('#btn')
+    //$key.on("keyup", searchNode)
+    $btn.bind('click', searchNode)
+    function searchNode() {
+      var treeObj = $.fn.zTree.getZTreeObj("treeDemo")
+      var value = $.trim($key.get(0).value)
+      var nodeList = []
+      if (value) {
+        nodeList = treeObj.getNodesByParamFuzzy('name', value)
+        if (nodeList.length) {
+          //找到级别最上面的
+          var myNode = nodeList[0]
+          var level = myNode.level
+          $.each(nodeList, function (index, item) {
+            if (level > item.level) {
+              level = item.level
+              myNode = item
+            }
+          })
+
+          var id = myNode.id
+          var open = myNode.open
+          //初始化
+          initialZtree()
+          //按搜索关键词选中并打开子级
+          var node = treeObj.getNodeByParam("id", id)
+          treeObj.selectNode(node) //选中id
+          !open && treeObj.expandNode(node) //打开或关子级
+        }
+        console.log(value, nodeList)
+      }
+    }
+    //初始化
+    initialZtree()
+
+  </script>
+</body>
+
+</html>
