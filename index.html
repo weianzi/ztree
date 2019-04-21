@@ -82,6 +82,8 @@
       var value = $.trim($key.get(0).value)
       var nodeList = []
       if (value) {
+        //初始化
+        initialZtree()
         nodeList = treeObj.getNodesByParamFuzzy('name', value)
         if (nodeList.length) {
           //找到级别最上面的
@@ -96,14 +98,15 @@
 
           var id = myNode.id
           var open = myNode.open
-          //初始化
-          initialZtree()
+          console.log(myNode, open)
           //按搜索关键词选中并打开子级
           var node = treeObj.getNodeByParam("id", id)
           treeObj.selectNode(node) //选中id
           !open && treeObj.expandNode(node) //打开或关子级
         }
-        console.log(value, nodeList)
+      } else {
+        //初始化
+        initialZtree()
       }
     }
     //初始化
